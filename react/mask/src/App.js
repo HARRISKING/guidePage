@@ -5,84 +5,75 @@ class App extends Component {
     constructor(props){
         super(props)
         this.state = {
-            contents: [
-                {
-                    id: 'first-step',
-                    desc: '我是第一步的说明'
-                }, {
-                    id: 'second-step',
-                    desc: '我是第二步的说明'
-                }, {
-                    id: 'third-step',
-                    desc: '我是第三步的说明'
-                }
-            ]
+           styles: {background: 'red'},
+           param:{},
+           index: 1
         }
     }
-
-getElementById(id) {
-    return document.getElementById(id);
-};
-
-// 设置蒙层
-// mask(params) {
-//     const  mask = this.refs.mask
-
-//     if (params.length === 0) {
-//         mask.style.display = 'none';
-//         return;
-//     }
-
-//     const {id, desc} = params[0];
-
-//     /****************   获取要cover的元素基本信息   ****************/
-//     const ele = getElementById(id);
-//     const offsetWidth = ele.offsetWidth;
-//     const offsetHeight = ele.offsetHeight;
-//     const offsetLeft = ele.offsetLeft;
-//     const offsetTop = ele.offsetTop;
-
-//     /****************   获取屏幕大小，包含滚动区域   ****************/
-//     const scrollWidth = document.body.scrollWidth;
-//     const scrollHeight = document.body.scrollHeight;
-
-//     /****************   为Mask设置css   ****************/
-//     mask.style.width = scrollWidth + 'px';
-//     mask.style.height = scrollHeight + 'px';
-//     mask.style.borderColor = "rgba(0, 0, 0, 0.75)";
-//     mask.style.borderStyle = 'solid';
-//     mask.style.borderLeftWidth = offsetLeft - 5 + 'px';
-//     mask.style.borderRightWidth = (scrollWidth - offsetWidth - offsetLeft - 5) + 'px';
-//     mask.style.borderTopWidth = offsetTop - 5 + 'px';
-//     mask.style.borderBottomWidth = (scrollHeight - offsetHeight - offsetTop - 5) + 'px';
-//     mask.style.position = 'absolute';
-//     mask.style.left = 0;
-//     mask.style.top = 0;
-
-//     /****************   为Mask设置desc   ****************/
-//     const maskDesc = getElementById('mask-desc');
-//     maskDesc.innerHTML = desc;
-
-//     /****************   绑定next事件   ****************/
-//     const nextBtn = getElementById('mask-next');
-//     (function (mask) {
-//         nextBtn.onclick = function () {
-//             params.shift();
-//             mask(params);
-//         };
-//     })(arguments.callee);
-// };
-
+    componentDidMount(){
+        this.next(1)
+    }
+next(index){
+    let eles = null
+    const {state} = this
+    if(index === 1){
+       state.param = {
+            ref: 'first-step',
+            desc: '我是第一步的说明'
+       }
+       eles = this.refs.firstStep 
+    }else if( index === 2 ){
+       state.param = {
+            ref: 'first-step',
+            desc: '我是第三步的说明'
+       } 
+       eles = this.refs.secondStep
+    }else if( index === 3 ){
+        state.param = {
+            ref: 'first-step',
+            desc: '我是第二步的说明'
+        } 
+       eles = this.refs.thirdStep
+    }    
+    const mask = this.refs.mask
+    // 获取要cover的元素基本信息
+    const offsetWidth = eles.offsetWidth
+    const offsetHeight = eles.offsetHeight
+    const offsetLeft = eles.offsetLeft
+    const offsetTop = eles.offsetTop
+    // 获取屏幕大小，包含滚动区域
+    const scrollHeight = document.body.scrollHeight
+    const scrollWidth = document.body.scrollWidth
+    state.styles = {
+        width: `${scrollWidth}px`,
+        height: `${scrollHeight}px`,
+        borderColor: "rgba(0,0,0,0.75)",
+        borderStyle: "solid",
+        borderLeftWidth: `${offsetLeft-5}px`,
+        borderRightWidth: `${scrollWidth - offsetWidth - offsetLeft - 5 }px`,
+        borderTopWidth: `${offsetTop-5}px`,
+        borderBottomWidth:`${scrollHeight - offsetHeight - offsetTop -5}px`,
+        position: 'absolute',
+        left: 0,
+        top: 0
+    }
+    if(state.index < 3){
+        state.index = index += 1
+    }
+this.setState(state)
+}
   render() {
+
+    console.log('state',this.state)
     return (
       <div>
-        <div id="first-step" class="steps">第一步</div>
-        <div id="second-step" class="steps">第二步</div>
-        <div id="third-step" class="steps">第三步</div>
-        <div id="mask" ref="mask">
-            <div class="mask-tip">
-                <span id="mask-desc" class="mask-tip-desc"></span>
-                <button id="mask-next" class="mask-tip-btn">下一步</button>
+        <div ref="firstStep" id="first-step" className="steps" onClick={this.next.bind(this,1)}>第一步</div>
+        <div ref="secondStep" id="second-step" className="steps">第二步</div>
+        <div ref="thirdStep" id="third-step" className="steps" onClick={this.next.bind(this,3)}>第三步</div>
+        <div ref="mask" style={this.state.styles}>
+            <div className="mask-tip">
+                <span ref="mask-desc" className="mask-tip-desc"></span>
+                <button ref="mask-next" className="mask-tip-btn" onClick={this.next.bind(this,this.state.index)}>下一步</button>
             </div>
         </div>
       </div>
